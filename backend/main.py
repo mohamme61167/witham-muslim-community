@@ -4,9 +4,11 @@ from email.message import EmailMessage
 from pathlib import Path
 import resend
 from dotenv import load_dotenv
-from fastapi import FastAPI, Form, HTTPException
+from fastapi import FastAPI, Form, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
 import stripe
+import time
+from typing import Optional
 
 # Load env that sits next to this file
 load_dotenv(dotenv_path=Path(__file__).parent / ".env")
@@ -17,6 +19,22 @@ origins = [o.strip() for o in os.getenv(
     "ALLOWED_ORIGINS",
     "http://localhost:3000,http://127.0.0.1:3000"
 ).split(",") if o.strip()]
+
+# In-memory idempotency for a short window
+_IDEMP_CACHE: dict[str, float] = {}
+_IDEMP_TTL = 15.0  # seconds
+
+def _idempotent_seen(key: str) -> bool:
+    now = time.time()
+    # prune old entries
+    for k, ts in list(_IDEMP_CACHE.items()):
+        if now - ts > _IDEMP_TTL:
+            del _IDEMP_CACHE[k]
+    if key in _IDEMP_CACHE:
+        return True
+    _IDEMP_CACHE[key] = now
+    return False
+
 
 # --- CORS (allow your frontend) ---
 allowed_origin = os.getenv("ALLOWED_ORIGIN", "http://localhost:3000")
@@ -36,7 +54,17 @@ def root():
 resend.api_key = os.getenv("RESEND_API_KEY")
 
 @app.post("/send-email")
-def send_email(name: str = Form(...), contact: str = Form(...), message: str = Form(...)):
+def send_email(
+        name: str = Form(...),
+        contact: str = Form(...), 
+        message: str = Form(...), 
+        x_idempotency_key: Optional[str] = Header(default=None)
+    ):
+
+    # Duplicate within TTL? Treat as success without re-sending
+    if x_idempotency_key and _idempotent_seen(x_idempotency_key):
+        return {"ok": True, "duplicate": True}
+
     frm = os.getenv("RESEND_FROM", "WMC <onboarding@resend.dev>")
     to  = os.getenv("EMAIL_TO")
     if not (resend.api_key and frm and to):

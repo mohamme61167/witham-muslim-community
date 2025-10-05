@@ -20,8 +20,19 @@ async function createMonthly(amount: number) {
   console.log("Stripe session URL →", data.url);
 }
 
+function makeIdemKey() {
+  // UUID where available; fallback to timestamp+rand
+  // @ts-ignore
+  if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
 async function sendContact(fd: FormData) {
-  const r = await fetch(`${API_BASE}/send-email`, { method: "POST", body: fd });
+  const r = await fetch(`${API_BASE}/send-email`, { 
+    method: "POST", 
+    body: fd,
+    headers: { "X-Idempotency-Key": makeIdemKey() }, 
+  });
   const txt = await r.text();
   if (!r.ok) throw new Error(txt || `HTTP ${r.status}`);
   return true;
