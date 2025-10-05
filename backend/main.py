@@ -2,7 +2,7 @@
 import os, ssl, smtplib, certifi
 from email.message import EmailMessage
 from pathlib import Path
-
+import resend
 from dotenv import load_dotenv
 from fastapi import FastAPI, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,11 +13,16 @@ load_dotenv(dotenv_path=Path(__file__).parent / ".env")
 
 app = FastAPI(title="Witham Muslim Community API")
 
+origins = [o.strip() for o in os.getenv(
+    "ALLOWED_ORIGINS",
+    "http://localhost:3000,http://127.0.0.1:3000"
+).split(",") if o.strip()]
+
 # --- CORS (allow your frontend) ---
 allowed_origin = os.getenv("ALLOWED_ORIGIN", "http://localhost:3000")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[allowed_origin],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -28,42 +33,29 @@ def root():
     return {"ok": True, "service": "wmc-api"}
 
 # --- Email (SMTP) ---
-SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
-SMTP_PORT = int(os.getenv("SMTP_PORT", "465"))
-SMTP_USER = os.getenv("SMTP_USER")
-SMTP_SECURITY = os.getenv("SMTP_SECURITY", "ssl").lower().strip()
-SMTP_PASS = os.getenv("SMTP_PASS")
-EMAIL_TO  = os.getenv("EMAIL_TO")
+resend.api_key = os.getenv("RESEND_API_KEY")
 
 @app.post("/send-email")
-def send_email(
-    name: str = Form(...),
-    contact: str = Form(...),
-    message: str = Form(...)
-):
-    if not (SMTP_USER and SMTP_PASS and EMAIL_TO):
-        raise HTTPException(status_code=500, detail="Email not configured on server.")
-    msg = EmailMessage()
-    msg["From"] = SMTP_USER
-    msg["To"] = EMAIL_TO
-    msg["Subject"] = f"[WMC] Contact form – {name}"
-    msg.set_content(f"Name: {name}\nContact: {contact}\n\n{message}")
+def send_email(name: str = Form(...), contact: str = Form(...), message: str = Form(...)):
+    frm = os.getenv("RESEND_FROM", "WMC <onboarding@resend.dev>")
+    to  = os.getenv("EMAIL_TO")
+    if not (resend.api_key and frm and to):
+        raise HTTPException(status_code=500, detail="Email service not configured.")
 
-    ctx = ssl.create_default_context(cafile=certifi.where())
+    data = {
+        "from": frm,
+        "to": [to],
+        "subject": f"[WMC] Contact form – {name}",
+        "text": f"Name: {name}\nContact: {contact}\n\nMessage:\n{message}",
+    }
+    if "@" in contact and "." in contact:
+        data["reply_to"] = contact
+
     try:
-        if SMTP_SECURITY == "starttls":
-            with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as s:
-                s.ehlo()
-                s.starttls(context=ctx)
-                s.login(SMTP_USER, SMTP_PASS)
-                s.send_message(msg)
-        else:  # default: SSL on 465
-            with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT, context=ctx) as s:
-                s.login(SMTP_USER, SMTP_PASS)
-                s.send_message(msg)
+        r = resend.Emails.send(data)
+        return {"ok": True, "id": r.get("id")}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Email send failed: {e}")
-    return {"ok": True}
 
 # --- Stripe (donations) ---
 stripe.api_key = os.getenv("STRIPE_SECRET")
@@ -96,13 +88,13 @@ def create_oneoff_checkout(amount_gbp: int):
 @app.post("/create-checkout-session/monthly")
 def create_monthly_checkout(amount_gbp: int = 10):
     if not stripe.api_key:
-        raise HTTPException(status_code=500, detail="Stripe not configured.")
+        raise HTTPException(500, "Stripe not configured.")
     if amount_gbp < 1:
-        raise HTTPException(status_code=400, detail="Amount must be at least £1.")
-    line_item = (
-        {"price": STRIPE_MONTHLY_PRICE_ID, "quantity": 1}
-        if STRIPE_MONTHLY_PRICE_ID
-        else {
+        raise HTTPException(400, "Amount must be at least £1.")
+    session = stripe.checkout.Session.create(
+        mode="subscription",
+        payment_method_types=["card"],
+        line_items=[{
             "price_data": {
                 "currency": "gbp",
                 "product_data": {"name": "Monthly Donation"},
@@ -110,13 +102,9 @@ def create_monthly_checkout(amount_gbp: int = 10):
                 "recurring": {"interval": "month"},
             },
             "quantity": 1,
-        }
-    )
-    session = stripe.checkout.Session.create(
-        mode="subscription",
-        payment_method_types=["card"],
-        line_items=[line_item],
+        }],
         success_url=SUCCESS_URL,
         cancel_url=CANCEL_URL,
+        allow_promotion_codes=True,
     )
     return {"url": session.url}

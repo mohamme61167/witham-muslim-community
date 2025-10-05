@@ -1,7 +1,26 @@
 
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
+
+const API_BASE = "/api/wmc"; // <-- use the proxy base, not http://127.0.0.1:8000
+
+
+async function createOneoff(amount: number) {
+  const r = await fetch(`${API_BASE}/create-checkout-session/oneoff?amount_gbp=${amount}`, { method: "POST" });
+  const data = await r.json();
+  if (data.url) window.location.href = data.url;
+}
+
+async function createMonthly(amount: number) {
+  const r = await fetch(`${API_BASE}/create-checkout-session/monthly?amount_gbp=${amount}`, { method: "POST" });
+  const data = await r.json();
+  if (data.url) window.location.href = data.url;
+  console.log("Stripe session URL →", data.url);
+}
+
+
+// render: {banner && <div className="...">{banner}</div>}
 
 // Single-file React site for the Witham Muslim Community (preview-ready)
 // Styling: TailwindCSS utility classes
@@ -269,7 +288,16 @@ function Donate() {
           <p className="mt-2 text-sm text-zinc-600">
             Enter the amount you’d like to give as a one-off contribution.
           </p>
-          <form className="mt-4 grid gap-3 justify-center">
+           <form
+            className="mt-4 grid gap-3 justify-center"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const input = e.currentTarget.elements.namedItem("oneoff") as HTMLInputElement;
+              const amt = Number(input?.value);
+              if (!Number.isFinite(amt) || amt < 1) return alert("Please enter at least £1");
+              createOneoff(amt);
+              }}
+           >
             <div className="relative w-48 mx-auto">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">£</span>
               <input
@@ -294,7 +322,16 @@ function Donate() {
           <p className="mt-2 text-sm text-zinc-600">
             Become a regular supporter with a recurring donation.
           </p>
-          <form className="mt-4 grid gap-3 justify-center">
+          <form
+            className="mt-4 grid gap-3 justify-center"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const input = e.currentTarget.elements.namedItem("monthly") as HTMLInputElement;
+              const amt = Number(input?.value || 10);
+              if (!Number.isFinite(amt) || amt < 1) return alert("Please enter at least £1");
+              createMonthly(amt);
+            }}
+          >
             <div className="relative w-48 mx-auto">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">£</span>
                 <input
@@ -395,9 +432,21 @@ function Footer() {
 }
 
 export default function WithamMuslimCommunitySite() {
+const [banner, setBanner] = useState<string | null>(null);
+useEffect(() => {
+    const ok = new URLSearchParams(window.location.search).get("donation");
+    if (ok === "success") setBanner("Thank you! Your donation was successful.");
+    else if (ok === "cancel") setBanner("Donation cancelled.");
+  }, []);
   return (
+    
     <div className="min-h-screen bg-white text-zinc-800">
       <Navbar />
+      {banner && (
+        <div className="bg-emerald-50 text-emerald-900 border border-emerald-200 px-4 py-3 text-center">
+          {banner}
+        </div>
+      )}
       <main>
         <Hero />
         <About />

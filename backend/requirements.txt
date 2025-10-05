@@ -4,3 +4,4 @@ python-dotenv==1.0.1
 stripe==10.10.0
 python-multipart
 certifi
+resend==0.8.0
