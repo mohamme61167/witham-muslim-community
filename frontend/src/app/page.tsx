@@ -21,21 +21,40 @@ async function createMonthly(amount: number) {
 }
 
 function makeIdemKey() {
-  // UUID where available; fallback to timestamp+rand
   // @ts-ignore
   if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
 async function sendContact(fd: FormData) {
-  const r = await fetch(`${API_BASE}/send-email`, { 
-    method: "POST", 
+  const r = await fetch("/api/wmc/send-email", {
+    method: "POST",
     body: fd,
-    headers: { "X-Idempotency-Key": makeIdemKey() }, 
+    headers: { "X-Idempotency-Key": makeIdemKey() },
   });
-  const txt = await r.text();
-  if (!r.ok) throw new Error(txt || `HTTP ${r.status}`);
-  return true;
+
+  // Read body safely (JSON if advertised, text otherwise).
+  let payload: any = null;
+  const ct = r.headers.get("content-type") || "";
+  try {
+    payload = ct.includes("application/json") ? await r.json() : await r.text();
+  } catch {
+    // body could be empty or invalid JSON
+    payload = null;
+  }
+
+  console.log("[send-email] status:", r.status, "payload:", payload);
+
+  if (!r.ok) {
+    // surface server message if present
+    const msg =
+      (payload && typeof payload === "object" && payload.detail) ||
+      (typeof payload === "string" && payload) ||
+      `HTTP ${r.status}`;
+    throw new Error(msg);
+  }
+
+  return payload; // may be json or text or null
 }
 
 
@@ -415,11 +434,11 @@ function Contact() {
                   const message = String(fd.get("message") ?? "").trim();
                   if (!name || !contact || !message) { alert("Please complete all fields."); return; }
 
-                  await sendContact(fd);                  // <-- use the helper (single code path)
+                  await sendContact(fd);
                   alert("Thanks! Your message has been sent.");
                   form.reset();
                 } catch (err: any) {
-                  console.error("send-email failed:", err);
+                  console.error("send-email error:", err);
                   alert(`Sorry—message failed. ${err?.message ?? ""}`.trim());
                 } finally {
                   btn.disabled = false;
