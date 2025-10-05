@@ -4,6 +4,7 @@
 import React, { useEffect, useState } from "react";
 
 const API_BASE = "/api/wmc"; // <-- use the proxy base, not http://127.0.0.1:8000
+let contactInFlight = false; // module-level lock, survives re-renders
 
 
 async function createOneoff(amount: number) {
@@ -384,34 +385,49 @@ function Contact() {
           <p className="mt-3 text-zinc-700">
             Questions, ideas, or want to volunteer? Send us a message and the team will get back to you.
           </p>
-          <form
-            className="mt-6 grid gap-3"
-            onSubmit={async (e) => {
-              e.preventDefault();
-              if (sending) return;              // <-- guard against second submit
-              setSending(true);
-              try {
-                const fd = new FormData(e.currentTarget);
-                const name = String(fd.get("name") ?? "").trim();
-                const contact = String(fd.get("contact") ?? "").trim();
-                const message = String(fd.get("message") ?? "").trim();
-                if (!name || !contact || !message) {
-                  alert("Please complete all fields.");
-                  return;
+            <form
+              className="mt-6 grid gap-3"
+              onSubmit={async (e) => {
+                e.preventDefault();
+
+                // Synchronous re-entrancy guard (blocks *any* second submit path)
+                if (contactInFlight) return;
+                contactInFlight = true;
+
+                // Disable the submitter immediately (prevents double Enter/click)
+                const submitter =
+                  (e.nativeEvent as SubmitEvent).submitter as HTMLButtonElement | null;
+                if (submitter) submitter.disabled = true;
+
+                try {
+                  const fd = new FormData(e.currentTarget);
+                  const name = String(fd.get("name") ?? "").trim();
+                  const contact = String(fd.get("contact") ?? "").trim();
+                  const message = String(fd.get("message") ?? "").trim();
+                  if (!name || !contact || !message) {
+                    alert("Please complete all fields.");
+                    return;
+                  }
+
+                  // Helpful diagnostics so we can verify single execution
+                  console.log("[contact] sending", { name, contact, message });
+
+                  const r = await fetch("/api/wmc/send-email", { method: "POST", body: fd });
+                  const txt = await r.text();
+                  if (!r.ok) throw new Error(txt || `HTTP ${r.status}`);
+
+                  console.log("[contact] success");
+                  alert("Thanks! Your message has been sent.");
+                  e.currentTarget.reset();
+                } catch (err: any) {
+                  console.error("[contact] failed", err);
+                  alert(`Sorry—message failed. ${err?.message ?? ""}`.trim());
+                } finally {
+                  if (submitter) submitter.disabled = false;
+                  contactInFlight = false;
                 }
-
-                await sendContact(fd);           // throws if response not ok
-                alert("Thanks! Your message has been sent.");
-                e.currentTarget.reset();
-              } catch (err) {
-                console.error("send-email failed:", err);
-                alert("Sorry—message failed. Please try again.");
-              } finally {
-                setSending(false);               // <-- re-enable button
-              }
-            }}
-          >
-
+              }}
+            >
             <input name="name" placeholder="Your name" className="px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
             <input name="contact" placeholder="Email or phone" className="px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
             <textarea name="message" placeholder="How can we help?" rows={5} className="px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
