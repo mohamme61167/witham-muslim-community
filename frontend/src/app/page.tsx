@@ -374,6 +374,8 @@ function Donate() {
 
 
 function Contact() {
+  const [sending, setSending] = React.useState(false);
+
   return (
     <section id="contact" className="max-w-6xl mx-auto px-4 py-16">
       <div className="grid md:grid-cols-3 gap-6">
@@ -382,23 +384,30 @@ function Contact() {
           <p className="mt-3 text-zinc-700">
             Questions, ideas, or want to volunteer? Send us a message and the team will get back to you.
           </p>
-          <form 
+          <form
             className="mt-6 grid gap-3"
             onSubmit={async (e) => {
               e.preventDefault();
-              const fd = new FormData(e.currentTarget);
-              const name = String(fd.get("name") ?? "").trim();
-              const contact = String(fd.get("contact") ?? "").trim();
-              const message = String(fd.get("message") ?? "").trim();
-              if (!name || !contact || !message) { alert("Please complete all fields."); return; }
-
+              if (sending) return;              // <-- guard against second submit
+              setSending(true);
               try {
-                await sendContact(fd);
+                const fd = new FormData(e.currentTarget);
+                const name = String(fd.get("name") ?? "").trim();
+                const contact = String(fd.get("contact") ?? "").trim();
+                const message = String(fd.get("message") ?? "").trim();
+                if (!name || !contact || !message) {
+                  alert("Please complete all fields.");
+                  return;
+                }
+
+                await sendContact(fd);           // throws if response not ok
                 alert("Thanks! Your message has been sent.");
                 e.currentTarget.reset();
               } catch (err) {
                 console.error("send-email failed:", err);
                 alert("Sorry—message failed. Please try again.");
+              } finally {
+                setSending(false);               // <-- re-enable button
               }
             }}
           >
