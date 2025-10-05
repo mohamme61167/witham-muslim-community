@@ -52,6 +52,7 @@ backend/.venv/
 backend/.env
 backend/__pycache__/
 backend/*.pyc
+backend/stripe_backup_code.txt
 
 # ---- General ----
 .DS_Store
