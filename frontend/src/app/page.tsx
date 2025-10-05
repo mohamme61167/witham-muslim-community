@@ -19,6 +19,14 @@ async function createMonthly(amount: number) {
   console.log("Stripe session URL →", data.url);
 }
 
+async function sendContact(fd: FormData) {
+  const r = await fetch(`${API_BASE}/send-email`, { method: "POST", body: fd });
+  const txt = await r.text();
+  if (!r.ok) throw new Error(txt || `HTTP ${r.status}`);
+  return true;
+}
+
+
 
 // render: {banner && <div className="...">{banner}</div>}
 
@@ -301,6 +309,7 @@ function Donate() {
             <div className="relative w-48 mx-auto">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">£</span>
               <input
+                name="oneoff"
                 type="number"
                 placeholder="Enter amount"
                 min="1"
@@ -335,6 +344,7 @@ function Donate() {
             <div className="relative w-48 mx-auto">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">£</span>
                 <input
+                  name="monthly"
                   type="number"
                   defaultValue={10}
                   min="1"
@@ -372,11 +382,31 @@ function Contact() {
           <p className="mt-3 text-zinc-700">
             Questions, ideas, or want to volunteer? Send us a message and the team will get back to you.
           </p>
-          <form className="mt-6 grid gap-3">
-            <input placeholder="Your name" className="px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-            <input placeholder="Email or phone" className="px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-            <textarea placeholder="How can we help?" rows={5} className="px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-            <button type="button" className="px-5 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700">Send message</button>
+          <form 
+            className="mt-6 grid gap-3"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const fd = new FormData(e.currentTarget);
+              const name = String(fd.get("name") ?? "").trim();
+              const contact = String(fd.get("contact") ?? "").trim();
+              const message = String(fd.get("message") ?? "").trim();
+              if (!name || !contact || !message) { alert("Please complete all fields."); return; }
+
+              try {
+                await sendContact(fd);
+                alert("Thanks! Your message has been sent.");
+                e.currentTarget.reset();
+              } catch (err) {
+                console.error("send-email failed:", err);
+                alert("Sorry—message failed. Please try again.");
+              }
+            }}
+          >
+
+            <input name="name" placeholder="Your name" className="px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            <input name="contact" placeholder="Email or phone" className="px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            <textarea name="message" placeholder="How can we help?" rows={5} className="px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            <button type="submit" className="px-5 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700">Send message</button>
             <p className="text-xs text-zinc-500">Hook this form to Formspree, Getform, or your backend endpoint.</p>
           </form>
         </div>
@@ -432,31 +462,31 @@ function Footer() {
 }
 
 export default function WithamMuslimCommunitySite() {
-const [banner, setBanner] = useState<string | null>(null);
-useEffect(() => {
-    const ok = new URLSearchParams(window.location.search).get("donation");
-    if (ok === "success") setBanner("Thank you! Your donation was successful.");
-    else if (ok === "cancel") setBanner("Donation cancelled.");
-  }, []);
-  return (
-    
-    <div className="min-h-screen bg-white text-zinc-800">
-      <Navbar />
-      {banner && (
-        <div className="bg-emerald-50 text-emerald-900 border border-emerald-200 px-4 py-3 text-center">
-          {banner}
-        </div>
-      )}
-      <main>
-        <Hero />
-        <About />
-        <PrayerTimes />
-        <Donate />
-        <Contact />
-      </main>
-      <Footer />
-    </div>
-  );
+  const [banner, setBanner] = useState<string | null>(null);
+  useEffect(() => {
+      const ok = new URLSearchParams(window.location.search).get("donation");
+      if (ok === "success") setBanner("Thank you! Your donation was successful.");
+      else if (ok === "cancel") setBanner("Donation cancelled.");
+    }, []);
+    return (
+      
+      <div className="min-h-screen bg-white text-zinc-800">
+        <Navbar />
+        {banner && (
+          <div className="bg-emerald-50 text-emerald-900 border border-emerald-200 px-4 py-3 text-center">
+            {banner}
+          </div>
+        )}
+        <main>
+          <Hero />
+          <About />
+          <PrayerTimes />
+          <Donate />
+          <Contact />
+        </main>
+        <Footer />
+      </div>
+    );
 }
 
 
