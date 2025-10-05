@@ -2,6 +2,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Witham Muslim Community",
+};
 
 const API_BASE = "/api/wmc"; // <-- use the proxy base, not http://127.0.0.1:8000
 let contactInFlight = false; // module-level lock, survives re-renders
