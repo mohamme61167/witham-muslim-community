@@ -439,7 +439,7 @@ function Contact() {
                   form.reset();
                 } catch (err: unknown) {
                   const error = err as Error;
-                  console.error("send-email error:", err);
+                  console.error("send-email error:", error);
                   alert(`Sorry—message failed. ${error?.message ?? ""}`.trim());
                 } finally {
                   btn.disabled = false;
