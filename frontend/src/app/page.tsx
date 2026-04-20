@@ -184,7 +184,7 @@ function Navbar() {
 
 function Hero() {
   return (
-    <section id="home" className="bg-gradient-to-b from-emerald-50 to-white">
+    <section id="home" className="bg-gradient-to-b from-amber-50 to-white">
       <div className="max-w-6xl mx-auto px-4 py-16 md:py-24 grid md:grid-cols-2 gap-10 items-center">
         <div>
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-zinc-900">
@@ -267,7 +267,7 @@ function About() {
 // add to line 194 when appropriate <a href="#events" className="px-4 py-3 rounded-xl bg-zinc-50 text-zinc-800 font-semibold border border-zinc-200 hover:bg-white">Community Events</a>
 function PrayerTimes() {
   return (
-    <section id="prayer" className="bg-gradient-to-b from-white to-emerald-50/60">
+    <section id="prayer" className="bg-gradient-to-b from-white to-amber-50/60">
       <div className="max-w-6xl mx-auto px-4 py-16 text-center">
         <h2 className="text-2xl md:text-3xl font-bold text-zinc-900">Prayer Times</h2>
         <p className="mt-4 text-zinc-700">
@@ -314,7 +314,7 @@ function PrayerTimes() {
 
 function Donate() {
   return (
-    <section id="donate" className="bg-gradient-to-b from-emerald-50/80 to-white">
+    <section id="donate" className="bg-gradient-to-b from-amber-50/80 to-white">
       <div className="max-w-3xl mx-auto px-4 py-16 text-center">
         <h2 className="text-2xl md:text-3xl font-bold text-zinc-900">Donate</h2>
         <p className="mt-3 text-zinc-700">
