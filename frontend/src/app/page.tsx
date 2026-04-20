@@ -141,14 +141,14 @@ function Navbar() {
             <a
               key={item.id}
               href={`#${item.id}`}
-              className="px-3 py-2 rounded-xl text-sm font-medium text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100 focus:outline-none focus-visible:ring focus-visible:ring-emerald-500"
+              className="px-3 py-2 rounded-xl text-sm font-medium text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100 focus:outline-none focus-visible:ring focus-visible:ring-amber-500"
             >
               {item.label}
             </a>
           ))}
           <a
             href="#donate"
-            className="ml-2 px-4 py-2 rounded-xl text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm"
+            className="ml-2 px-4 py-2 rounded-xl text-sm font-semibold bg-amber-700 text-white hover:bg-amber-800 shadow-sm"
           >
             Donate
           </a>
@@ -174,7 +174,7 @@ function Navbar() {
                 {item.label}
               </a>
             ))}
-            <a href="#donate" onClick={() => setOpen(false)} className="px-3 py-2 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700">Donate</a>
+            <a href="#donate" onClick={() => setOpen(false)} className="px-3 py-2 rounded-lg text-sm font-semibold text-white bg-amber-700 hover:bg-amber-800">Donate</a>
           </div>
         </div>
       )}
@@ -197,7 +197,7 @@ function Hero() {
             Jummah Prayer is at 1:30 at the Witham Labour Hall, looking forward to seeing you there
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <a href="#donate" className="px-5 py-3 rounded-xl bg-emerald-600 text-white font-semibold shadow hover:bg-emerald-700">Support the Masjid Fund</a>
+            <a href="#donate" className="px-5 py-3 rounded-xl bg-amber-700 text-white font-semibold shadow hover:bg-amber-800">Support the Masjid Fund</a>
           </div>
           <p className="mt-4 text-sm text-zinc-500">
             Charity (Sadaqah) is continuous—every brick you help lay will benefit you in the Hereafter, in shā’ Allāh.
@@ -210,11 +210,11 @@ function Hero() {
                 <div className="text-6xl">🕌</div>
                 <p className="mt-4 font-semibold text-zinc-800">Temporary Jummah Prayer Venue</p>
                 <p className="text-zinc-600">Witham Labour Hall (until we secure a property)</p>
-                <a href="#prayer" className="inline-block mt-4 text-emerald-700 font-semibold underline">View prayer timetable</a>
+                <a href="#prayer" className="inline-block mt-4 text-amber-700 font-semibold underline">View prayer timetable</a>
               </div>
             </div>
           </div>
-          <div className="absolute -bottom-4 -right-4 bg-emerald-600 text-white text-xs rounded-xl px-3 py-2 shadow-lg">
+          <div className="absolute -bottom-4 -right-4 bg-amber-700 text-white text-xs rounded-xl px-3 py-2 shadow-lg">
             
           </div>
         </div>
@@ -252,7 +252,7 @@ function About() {
         <div className="md:col-span-1 p-5 rounded-2xl border border-zinc-200 bg-white shadow-sm">
           <p className="text-sm uppercase tracking-wide text-zinc-500 font-semibold">Quick links</p>
           <div className="mt-3 grid gap-2">
-            <a href="#donate" className="px-4 py-3 rounded-xl bg-emerald-50 text-emerald-800 font-semibold border border-emerald-200 hover:bg-emerald-100">Donate to the Masjid Fund</a>
+            <a href="#donate" className="px-4 py-3 rounded-xl bg-amber-50 text-amber-800 font-semibold border border-amber-200 hover:bg-amber-100">Donate to the Masjid Fund</a>
             
             <a href="#contact" className="px-4 py-3 rounded-xl bg-zinc-50 text-zinc-800 font-semibold border border-zinc-200 hover:bg-white">Contact the Team</a>
           </div>
@@ -277,7 +277,7 @@ function PrayerTimes() {
           href="https://mawaqit.net/en/alfalah-braintree" // 🔗 change this to the link you prefer
           target="_blank"
           rel="noreferrer"
-          className="mt-6 inline-block px-6 py-3 rounded-xl bg-emerald-600 text-white font-semibold shadow hover:bg-emerald-700"
+          className="mt-6 inline-block px-6 py-3 rounded-xl bg-amber-700 text-white font-semibold shadow hover:bg-amber-800"
         >
           View Prayer Timetable
         </a>
@@ -292,7 +292,7 @@ function PrayerTimes() {
     <section id="events" className="max-w-6xl mx-auto px-4 py-16">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <h2 className="text-2xl md:text-3xl font-bold text-zinc-900">Upcoming Events</h2>
-        <a href="#contact" className="text-sm font-semibold text-emerald-700 underline">Host an event</a>
+        <a href="#contact" className="text-sm font-semibold text-amber-700 underline">Host an event</a>
       </div>
       <div className="mt-6 grid md:grid-cols-2 gap-4">
         {placeholderEvents.map((evt) => (
@@ -303,7 +303,7 @@ function PrayerTimes() {
             <p className="mt-2 text-zinc-700">{evt.blurb}</p>
             <div className="mt-3 flex gap-2">
               <button className="px-3 py-2 rounded-xl text-sm font-semibold border border-zinc-300 hover:bg-zinc-50">Add to Calendar</button>
-              <button className="px-3 py-2 rounded-xl text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700">RSVP</button>
+              <button className="px-3 py-2 rounded-xl text-sm font-semibold bg-amber-700 text-white hover:bg-amber-800">RSVP</button>
             </div>
           </article>
         ))}
@@ -345,12 +345,12 @@ function Donate() {
                 type="number"
                 placeholder="Enter amount"
                 min="1"
-                className="px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 w-48 text-center"
+                className="px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-amber-500 w-48 text-center"
               />
             </div>  
             <button
               type="submit"
-              className="px-5 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700"
+              className="px-5 py-3 rounded-xl bg-amber-700 text-white font-semibold hover:bg-amber-800"
             >
               Donate Now
             </button>
@@ -380,12 +380,12 @@ function Donate() {
                   type="number"
                   defaultValue={10}
                   min="1"
-                  className="px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 w-48 text-center"
+                  className="px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-amber-500 w-48 text-center"
                 />
             </div>   
             <button
               type="submit"
-              className="px-5 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700"
+              className="px-5 py-3 rounded-xl bg-amber-700 text-white font-semibold hover:bg-amber-800"
             >
               Set up Monthly Donation
             </button>
@@ -416,9 +416,9 @@ function Contact() {
             Questions, ideas, or want to volunteer? Send us a message and the team will get back to you.
           </p>
             <form ref={formRef} className="mt-6 grid gap-3" noValidate>
-            <input name="name" placeholder="Your name" className="px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-            <input name="contact" placeholder="Email or phone" className="px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-            <textarea name="message" placeholder="How can we help?" rows={5} className="px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            <input name="name" placeholder="Your name" className="px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+            <input name="contact" placeholder="Email or phone" className="px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+            <textarea name="message" placeholder="How can we help?" rows={5} className="px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-amber-500" />
             <button
               type="button"
               onClick={async (e) => {
@@ -446,7 +446,7 @@ function Contact() {
                   contactInFlight = false;
                 }
               }}
-              className="px-5 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700"
+              className="px-5 py-3 rounded-xl bg-amber-700 text-white font-semibold hover:bg-amber-800"
             >
               Send message
             </button>
@@ -456,8 +456,8 @@ function Contact() {
         <div className="md:col-span-1 p-5 rounded-2xl border border-zinc-200 bg-white shadow-sm">
           <p className="font-semibold text-zinc-900">Other ways to reach us</p>
           <div className="mt-3 grid gap-2 text-sm text-zinc-700">
-            <p>Email: <a className="font-semibold text-emerald-700 underline" href="mailto:admin@withammuslimcommunity.com">admin@withammuslimcommunity.com</a></p>
-            <p>Facebook: <a className="font-semibold text-emerald-700 underline" href="https://www.facebook.com/profile.php?id=61571359542986" target="_blank" rel="noreferrer">@WithamMuslimCommunity</a></p>
+            <p>Email: <a className="font-semibold text-amber-700 underline" href="mailto:admin@withammuslimcommunity.com">admin@withammuslimcommunity.com</a></p>
+            <p>Facebook: <a className="font-semibold text-amber-700 underline" href="https://www.facebook.com/profile.php?id=61571359542986" target="_blank" rel="noreferrer">@WithamMuslimCommunity</a></p>
           </div>
         </div>
       </div>
@@ -513,7 +513,7 @@ export default function WithamMuslimCommunitySite() {
       <div className="min-h-screen bg-white text-zinc-800">
         <Navbar />
         {banner && (
-          <div className="bg-emerald-50 text-emerald-900 border border-emerald-200 px-4 py-3 text-center">
+          <div className="bg-amber-50 text-amber-900 border border-amber-200 px-4 py-3 text-center">
             {banner}
           </div>
         )}
