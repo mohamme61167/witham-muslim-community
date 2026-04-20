@@ -2,11 +2,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Witham Muslim Community",
-};
 
 const API_BASE = "/api/wmc"; // <-- use the proxy base, not http://127.0.0.1:8000
 let contactInFlight = false; // module-level lock, survives re-renders
@@ -400,8 +395,8 @@ function Donate() {
         <div className="mt-8 p-4 rounded-2xl border border-zinc-200 bg-white shadow-sm text-sm text-zinc-600">
           Prefer bank transfer? <br />
           <span className="font-semibold">Account Name:</span> Witham Muslim Community •{" "}
-          <span className="font-semibold">Sort Code:</span> 00-00-00 •{" "}
-          <span className="font-semibold">Account No:</span> 00000000 (PLACEHOLDERS)
+          <span className="font-semibold">Sort Code:</span> 30-99-50 •{" "}
+          <span className="font-semibold">Account No:</span> 65881750
         </div>
       </div>
     </section>
@@ -460,11 +455,8 @@ function Contact() {
         <div className="md:col-span-1 p-5 rounded-2xl border border-zinc-200 bg-white shadow-sm">
           <p className="font-semibold text-zinc-900">Other ways to reach us</p>
           <div className="mt-3 grid gap-2 text-sm text-zinc-700">
-            <p>Email: <a className="font-semibold text-emerald-700 underline" href="mailto:info@withammuslimcommunity.org">info@withammuslimcommunity.org</a></p>
-            <p>Facebook: <a className="font-semibold text-emerald-700 underline" href="#" target="_blank" rel="noreferrer">@WithamMuslimCommunity</a></p>
-            <p>Instagram: <a className="font-semibold text-emerald-700 underline" href="#" target="_blank" rel="noreferrer">@witham.muslim.community</a></p>
-            <p>Phone/WhatsApp (placeholder): <span className="font-semibold">+44 0000 000000</span></p>
-            <p className="text-xs text-zinc-500">Replace placeholders with your real handles.</p>
+            <p>Email: <a className="font-semibold text-emerald-700 underline" href="mailto:admin@withammuslimcommunity.com">admin@withammuslimcommunity.com</a></p>
+            <p>Facebook: <a className="font-semibold text-emerald-700 underline" href="https://www.facebook.com/profile.php?id=61571359542986" target="_blank" rel="noreferrer">@WithamMuslimCommunity</a></p>
           </div>
         </div>
       </div>

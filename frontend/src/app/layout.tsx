@@ -14,10 +14,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "WMC",
-    template: "WMC",
+    default: "Witham Muslim Community",
+    template: "Witham Muslim Community",
   },
-  description: "Witham Muslim Community",
+  description: "A volunteer-led community working to establish a permanent masjid in Witham, Essex.",
 };
 
 export default function RootLayout({
