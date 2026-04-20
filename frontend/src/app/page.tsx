@@ -115,9 +115,11 @@ const NAV = [
 function Logo() {
   return (
     <div className="flex items-center gap-3">
-      <div className="w-9 h-9 rounded-2xl bg-emerald-600 flex items-center justify-center shadow-md">
-        <span className="text-white text-x2 font-semibold">WMC</span>
-      </div>
+      <img
+        src="/WMC_Logo_no_text-removebg-preview.png"
+        alt="WMC Logo"
+        className="w-10 h-10 object-contain"
+      />
       <div className="leading-tight">
         <p className="font-semibold text-zinc-900">Witham Muslim Community</p>
         <p className="text-xs text-zinc-500">Seeking a home for our masjid</p>
