@@ -21,7 +21,7 @@ async function createMonthly(amount: number) {
 }
 
 function makeIdemKey() {
-  // @ts-ignore
+  // @ts-expect-error
   if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
@@ -34,7 +34,7 @@ async function sendContact(fd: FormData) {
   });
 
   // Read body safely (JSON if advertised, text otherwise).
-  let payload: any = null;
+  let payload: unknown = null;
   const ct = r.headers.get("content-type") || "";
   try {
     payload = ct.includes("application/json") ? await r.json() : await r.text();
@@ -437,9 +437,10 @@ function Contact() {
                   await sendContact(fd);
                   alert("Thanks! Your message has been sent.");
                   form.reset();
-                } catch (err: any) {
+                } catch (err: unknown) {
+                  const error = err as Error;
                   console.error("send-email error:", err);
-                  alert(`Sorry—message failed. ${err?.message ?? ""}`.trim());
+                  alert(`Sorry—message failed. ${error?.message ?? ""}`.trim());
                 } finally {
                   btn.disabled = false;
                   contactInFlight = false;
