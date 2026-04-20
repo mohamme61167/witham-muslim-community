@@ -44,13 +44,14 @@ async function sendContact(fd: FormData) {
   console.log("[send-email] status:", r.status, "payload:", payload);
 
   if (!r.ok) {
-    // surface server message if present
-    const msg =
-      (payload && typeof payload === "object" && payload.detail) ||
-      (typeof payload === "string" && payload) ||
-      `HTTP ${r.status}`;
+    let msg = `HTTP ${r.status}`;
+    if (typeof payload === "string" && payload) msg = payload;
+    if (payload && typeof payload === "object") {
+      const detail = (payload as Record<string, unknown>).detail;
+      if (typeof detail === "string") msg = detail;
+    }
     throw new Error(msg);
-  }
+}
 
   return payload; // may be json or text or null
 }
@@ -403,7 +404,6 @@ function Donate() {
 
 
 function Contact() {
-  const [sending, setSending] = React.useState(false);
   const formRef = React.useRef<HTMLFormElement>(null);
   return (
     <section id="contact" className="max-w-6xl mx-auto px-4 py-16">
