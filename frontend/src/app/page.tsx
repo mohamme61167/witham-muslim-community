@@ -450,7 +450,6 @@ function Contact() {
             >
               Send message
             </button>
-            <p className="text-xs text-zinc-500">Hook this form to Formspree, Getform, or your backend endpoint.</p>
           </form>
         </div>
         <div className="md:col-span-1 p-5 rounded-2xl border border-zinc-200 bg-white shadow-sm">
@@ -479,7 +478,6 @@ function Footer() {
             <ul className="mt-2 space-y-2 text-zinc-600">
               <li><a href="#about" className="hover:text-zinc-900">About</a></li>
               <li><a href="#prayer" className="hover:text-zinc-900">Prayer Times</a></li>
-              <li><a href="#events" className="hover:text-zinc-900">Events</a></li>
               <li><a href="#donate" className="hover:text-zinc-900">Donate</a></li>
             </ul>
           </div>
